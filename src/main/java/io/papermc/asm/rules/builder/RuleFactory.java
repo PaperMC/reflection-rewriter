@@ -30,14 +30,11 @@ public interface RuleFactory {
 
     void plainStaticRewrite(ClassDesc newOwner, MethodMatcher methodMatcher, String staticMethodName);
 
-    default void changeParamToSuper(final Class<?> oldParamType, final Class<?> newParamType, final MethodMatcher methodMatcher) {
-        if (!newParamType.isAssignableFrom(oldParamType)) {
-            throw new IllegalArgumentException(newParamType + " is not a superclass of " + oldParamType);
-        }
-        this.changeParamToSuper(desc(oldParamType), desc(newParamType), methodMatcher);
+    default void changeParamToSuper(final Class<?> newParamType, final TargetedMethodMatcher methodMatcher) {
+        this.changeParamToSuper( desc(newParamType), methodMatcher);
     }
 
-    void changeParamToSuper(ClassDesc legacyParamType, ClassDesc newParamType, MethodMatcher methodMatcher);
+    void changeParamToSuper(ClassDesc newParamType, TargetedMethodMatcher methodMatcher);
 
     default void changeParamFuzzy(final Class<?> newParamType, final Method staticHandler, final TargetedMethodMatcher targetedMethodMatcher) {
         this.changeParamFuzzy(desc(newParamType), staticHandler, targetedMethodMatcher);
@@ -51,14 +48,11 @@ public interface RuleFactory {
 
     void changeParamDirect(ClassDesc newParamType, Method staticHandler, TargetedMethodMatcher targetedMethodMatcher);
 
-    default void changeReturnTypeToSub(final Class<?> oldReturnType, final Class<?> newReturnType, final MethodMatcher methodMatcher) {
-        if (!oldReturnType.isAssignableFrom(newReturnType)) {
-            throw new IllegalArgumentException(newReturnType + " is not a subclass of " + oldReturnType);
-        }
-        this.changeReturnTypeToSub(desc(oldReturnType), desc(newReturnType), methodMatcher);
+    default void changeReturnTypeToSub(final Class<?> newReturnType, final TargetedMethodMatcher methodMatcher) {
+        this.changeReturnTypeToSub(desc(newReturnType), methodMatcher);
     }
 
-    void changeReturnTypeToSub(ClassDesc oldReturnType, ClassDesc newReturnType, MethodMatcher methodMatcher);
+    void changeReturnTypeToSub(ClassDesc newReturnType, TargetedMethodMatcher methodMatcher);
 
     default void changeReturnTypeDirect(final Class<?> newReturnType, final Method staticHandler, final TargetedMethodMatcher targetedMethodMatcher) {
         this.changeReturnTypeDirect(desc(newReturnType), staticHandler, targetedMethodMatcher);

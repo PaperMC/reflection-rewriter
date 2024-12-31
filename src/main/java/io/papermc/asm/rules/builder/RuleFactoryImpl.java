@@ -50,8 +50,8 @@ class RuleFactoryImpl implements RuleFactory {
     }
 
     @Override
-    public void changeParamToSuper(final ClassDesc legacyParamType, final ClassDesc newParamType, final MethodMatcher methodMatcher) {
-        this.addRule(new SuperTypeParamRewrite(this.owners, methodMatcher, legacyParamType, newParamType));
+    public void changeParamToSuper(final ClassDesc newParamType, final TargetedMethodMatcher methodMatcher) {
+        this.addRule(new SuperTypeParamRewrite(this.owners, methodMatcher, newParamType));
     }
 
     @Override
@@ -65,8 +65,8 @@ class RuleFactoryImpl implements RuleFactory {
     }
 
     @Override
-    public void changeReturnTypeToSub(final ClassDesc oldReturnType, final ClassDesc newReturnType, final MethodMatcher methodMatcher) {
-        this.addRule(new SubTypeReturnRewrite(this.owners, methodMatcher, oldReturnType, newReturnType));
+    public void changeReturnTypeToSub(final ClassDesc newReturnType, final TargetedMethodMatcher methodMatcher) {
+        this.addRule(new SubTypeReturnRewrite(this.owners, methodMatcher, newReturnType));
     }
 
     @Override

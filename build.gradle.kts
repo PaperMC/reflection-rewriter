@@ -89,7 +89,7 @@ val filtered = tasks.register<FilterTestClasspath>("filteredTestClasspath") {
 
 dependencies {
     implementation(mainForNewTargets.output)
-    testImplementation(files(filtered.flatMap { it.outputDir }))
+    testRuntimeOnly(files(filtered.flatMap { it.outputDir })) // only have access to old targets at runtime, don't use them in actual tests
     testImplementation(testDataNewTargets.output)
 
     testDataNewTargets.implementationConfigurationName(mainForNewTargets.output)

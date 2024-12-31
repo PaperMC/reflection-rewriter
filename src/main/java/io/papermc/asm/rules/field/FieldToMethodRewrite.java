@@ -1,7 +1,11 @@
 package io.papermc.asm.rules.field;
 
 import io.papermc.asm.ClassProcessingContext;
+import io.papermc.asm.rules.RewriteRule;
 import io.papermc.asm.rules.builder.matcher.field.FieldMatcher;
+import io.papermc.asm.versioned.ApiVersion;
+import io.papermc.asm.versioned.VersionedRuleFactory;
+import io.papermc.asm.versioned.matcher.VersionedMatcher;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.lang.constant.MethodTypeDesc;
@@ -90,5 +94,19 @@ public record FieldToMethodRewrite(Set<ClassDesc> owners, FieldMatcher fieldMatc
         return (delegate) -> {
             delegate.visitMethodInsn(type.opcode(opcode), owner, methodName, type.desc(fieldTypeDesc).descriptorString(), this.isInterfaceMethod);
         };
+    }
+
+    public record Versioned(Set<ClassDesc> owners, @Nullable String getterName, @Nullable String setterName, boolean isInterfaceMethod, VersionedMatcher<FieldMatcher> versions) implements VersionedRuleFactory {
+
+        public Versioned {
+            if (getterName == null && setterName == null) {
+                throw new IllegalArgumentException("At least one of getterName or setterName must be non-null");
+            }
+        }
+
+        @Override
+        public RewriteRule createRule(final ApiVersion apiVersion) {
+            return this.versions.ruleForVersion(apiVersion, matcher -> new FieldToMethodRewrite(this.owners(), matcher, this.getterName(), this.setterName(), this.isInterfaceMethod()));
+        }
     }
 }

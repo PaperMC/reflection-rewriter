@@ -4,5 +4,7 @@ public enum RenamedTestEnum {
     ONE,
     TWO,
     THREE,
+    FOUR,
+    FIVE,
     ;
 }

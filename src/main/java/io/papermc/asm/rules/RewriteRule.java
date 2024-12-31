@@ -49,6 +49,10 @@ public interface RewriteRule {
         return chain(Arrays.asList(rules));
     }
 
+    static RewriteRule chain(final RewriteRule rule1, final RewriteRule rule2) {
+        return chain(List.of(rule1, rule2));
+    }
+
     static RewriteRule chain(final Collection<? extends RewriteRule> rules) {
         final List<? extends RewriteRule> filteredRules = rules.stream().filter(r -> r != EMPTY).toList();
         if (filteredRules.isEmpty()) {

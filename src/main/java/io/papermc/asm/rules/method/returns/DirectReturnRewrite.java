@@ -1,8 +1,13 @@
 package io.papermc.asm.rules.method.returns;
 
+import io.papermc.asm.rules.RewriteRule;
 import io.papermc.asm.rules.builder.matcher.method.targeted.TargetedMethodMatcher;
 import io.papermc.asm.rules.method.OwnableMethodRewriteRule;
 import io.papermc.asm.rules.method.generated.TargetedTypeGeneratedStaticRewrite;
+import io.papermc.asm.versioned.ApiVersion;
+import io.papermc.asm.versioned.VersionedRuleFactory;
+import io.papermc.asm.versioned.matcher.TargetedMethodMatcherWithHandler;
+import io.papermc.asm.versioned.matcher.VersionedMatcher;
 import java.lang.constant.ClassDesc;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -28,6 +33,14 @@ public record DirectReturnRewrite(Set<ClassDesc> owners, ClassDesc existingType,
         }
         if (!staticHandler.getParameterTypes()[includeOwnerContext ? 1 : 0].describeConstable().orElseThrow().equals(existingType)) {
             throw new IllegalArgumentException("staticHandler param type isn't " + existingType);
+        }
+    }
+
+    public record Versioned(Set<ClassDesc> owners, ClassDesc existingType, VersionedMatcher<TargetedMethodMatcherWithHandler> versions, boolean includeOwnerContext) implements VersionedRuleFactory {
+
+        @Override
+        public RewriteRule createRule(final ApiVersion apiVersion) {
+            return this.versions.ruleForVersion(apiVersion, pair -> new DirectReturnRewrite(this.owners(), this.existingType(), pair.matcher(), pair.staticHandler(), this.includeOwnerContext()));
         }
     }
 }

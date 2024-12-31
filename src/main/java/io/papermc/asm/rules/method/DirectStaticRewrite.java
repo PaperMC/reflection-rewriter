@@ -1,11 +1,15 @@
 package io.papermc.asm.rules.method;
 
 import io.papermc.asm.ClassProcessingContext;
+import io.papermc.asm.rules.RewriteRule;
 import io.papermc.asm.rules.builder.matcher.method.MethodMatcher;
 import io.papermc.asm.rules.generate.GeneratedMethodHolder;
 import io.papermc.asm.rules.method.rewrite.ConstructorRewrite;
 import io.papermc.asm.rules.method.rewrite.MethodRewrite;
 import io.papermc.asm.rules.method.rewrite.SimpleRewrite;
+import io.papermc.asm.versioned.ApiVersion;
+import io.papermc.asm.versioned.VersionedRuleFactory;
+import io.papermc.asm.versioned.matcher.VersionedMatcher;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
 import java.util.Set;
@@ -48,5 +52,13 @@ public record DirectStaticRewrite(Set<ClassDesc> owners, @Nullable String static
     @Override
     public ClassDesc staticRedirectOwner(final ClassProcessingContext context) {
         return this.staticRedirectOwner;
+    }
+
+    public record Versioned(Set<ClassDesc> owners, ClassDesc staticRedirectOwner, @Nullable String staticMethodName, VersionedMatcher<MethodMatcher> versions) implements VersionedRuleFactory {
+
+        @Override
+        public RewriteRule createRule(final ApiVersion apiVersion) {
+            return this.versions.ruleForVersion(apiVersion, match -> new DirectStaticRewrite(this.owners(), this.staticMethodName(), match, this.staticRedirectOwner()));
+        }
     }
 }

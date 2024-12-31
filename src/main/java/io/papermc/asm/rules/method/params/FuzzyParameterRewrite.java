@@ -1,10 +1,15 @@
 package io.papermc.asm.rules.method.params;
 
 import io.papermc.asm.ClassProcessingContext;
+import io.papermc.asm.rules.RewriteRule;
 import io.papermc.asm.rules.builder.matcher.method.targeted.TargetedMethodMatcher;
 import io.papermc.asm.rules.method.OwnableMethodRewriteRule;
 import io.papermc.asm.rules.method.generated.TargetedTypeGeneratedStaticRewrite;
 import io.papermc.asm.rules.method.rewrite.MethodRewrite;
+import io.papermc.asm.versioned.ApiVersion;
+import io.papermc.asm.versioned.VersionedRuleFactory;
+import io.papermc.asm.versioned.matcher.TargetedMethodMatcherWithHandler;
+import io.papermc.asm.versioned.matcher.VersionedMatcher;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.lang.constant.MethodTypeDesc;
@@ -53,5 +58,13 @@ public record FuzzyParameterRewrite(Set<ClassDesc> owners, ClassDesc existingTyp
                 final MethodTypeDesc newDynamicMethodType = this.transformToRedirectDescriptor(MethodTypeDesc.ofDescriptor(dynamicMethodType.getDescriptor()));
                 arguments[MethodRewrite.DYNAMIC_TYPE_IDX] = Type.getMethodType(newDynamicMethodType.descriptorString());
             });
+    }
+
+    public record Versioned(Set<ClassDesc> owners, ClassDesc existingType, VersionedMatcher<TargetedMethodMatcherWithHandler> versions) implements VersionedRuleFactory {
+
+        @Override
+        public RewriteRule createRule(final ApiVersion apiVersion) {
+            return this.versions.ruleForVersion(apiVersion, pair -> new FuzzyParameterRewrite(this.owners, this.existingType, pair.matcher(), pair.staticHandler()));
+        }
     }
 }

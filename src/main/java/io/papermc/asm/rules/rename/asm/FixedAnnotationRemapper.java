@@ -1,4 +1,4 @@
-package io.papermc.asm.rules.rename;
+package io.papermc.asm.rules.rename.asm;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;

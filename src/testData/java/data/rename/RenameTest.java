@@ -15,6 +15,13 @@ public final class RenameTest {
         checkAnnotation(RenameTest.class.getDeclaredMethod("entry"));
         checkAnnotation(RenameTest.class.getDeclaredField("field"));
         checkAnnotation(RenameTest.class.getDeclaredField("otherField"));
+
+        final TestEnum a = TestEnum.valueOf("A");
+        System.out.println(a);
+        final TestEnum fb = TestEnum.valueOf("FB");
+        System.out.println(fb);
+        final TestEnum ea = TestEnum.valueOf("Ea");
+        System.out.println(ea);
     }
 
     private static void checkAnnotation(final AnnotatedElement element) {

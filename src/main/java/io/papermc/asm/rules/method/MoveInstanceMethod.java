@@ -1,9 +1,13 @@
 package io.papermc.asm.rules.method;
 
 import io.papermc.asm.ClassProcessingContext;
+import io.papermc.asm.rules.RewriteRule;
 import io.papermc.asm.rules.builder.matcher.method.MethodMatcher;
 import io.papermc.asm.rules.method.generated.GeneratedStaticRewrite;
 import io.papermc.asm.rules.method.rewrite.MethodRewrite;
+import io.papermc.asm.versioned.ApiVersion;
+import io.papermc.asm.versioned.VersionedRuleFactory;
+import io.papermc.asm.versioned.matcher.VersionedMatcher;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
 import java.util.Set;
@@ -55,5 +59,13 @@ public record MoveInstanceMethod(
     @Override
     public void generateConstructor(final GeneratorAdapterFactory factory, final MethodCallData modified, final ConstructorCallData original) {
         throw new UnsupportedOperationException("Doesn't work with constructors");
+    }
+
+    public record Versioned(Set<ClassDesc> owners, ClassDesc newOwner, String newMethodName, VersionedMatcher<MethodMatcher> versions) implements VersionedRuleFactory {
+
+        @Override
+        public RewriteRule createRule(final ApiVersion apiVersion) {
+            return this.versions.ruleForVersion(apiVersion, match -> new MoveInstanceMethod(this.owners(), match, this.newOwner(), this.newMethodName()));
+        }
     }
 }
